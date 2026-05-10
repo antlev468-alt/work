@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.91', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.0.91', '127.0.0.1', 'work-8tso.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
