@@ -1,0 +1,13 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<h2>Удаление аккаунта</h2>
+<p>Вы уверены, что хотите удалить аккаунт <strong>{{ user.username }}</strong>?</p>
+<p style="color: red;">Это действие нельзя отменить!</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить аккаунт</button>
+    <a href="{% url 'orders:order_list' %}" class="btn">Отмена</a>
+</form>
+{% endblock %}

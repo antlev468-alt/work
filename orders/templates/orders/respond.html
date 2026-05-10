@@ -1,0 +1,11 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+<h2>Отклик на заказ: {{ order.title }}</h2>
+<p>{{ order.description }}</p>
+<p>Баллы: {{ order.points }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Отправить отклик</button>
+</form>
+{% endblock %}

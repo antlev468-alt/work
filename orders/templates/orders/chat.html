@@ -1,0 +1,82 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<h2>Чат по заказу: {{ order.title }}</h2>
+<p>Заказчик: {{ order.client.username }} | Исполнитель: {{ order.executor.username }}</p>
+
+<div id="chat-messages" style="border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px;">
+    {% for msg in chat_messages %}
+        <p>
+            <strong>{{ msg.sender.username }}</strong>
+            <small>{{ msg.created_at|date:"H:i" }}</small><br>
+            {{ msg.text }}
+        </p>
+        {% if not forloop.last %}<hr>{% endif %}
+    {% empty %}
+        <p>Сообщений пока нет.</p>
+    {% endfor %}
+</div>
+
+<form id="chat-form">
+    {% csrf_token %}
+    <input type="text" id="message-input" name="text" placeholder="Введите сообщение..." style="width: 80%;" autocomplete="off">
+    <button type="submit" class="btn btn-success">Отправить</button>
+</form>
+
+<a href="{% url 'orders:order_list' %}">← Назад к заказам</a>
+
+<script>
+    const chatBox = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const orderId = {{ order.id }};
+    let lastMessageId = 0;
+
+    // Прокрутка вниз
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Отправка сообщения без перезагрузки
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const text = messageInput.value.trim();
+        if (!text) return;
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: 'text=' + encodeURIComponent(text)
+        }).then(response => {
+            messageInput.value = '';
+            loadMessages();
+        });
+    });
+
+    // Загрузка новых сообщений
+    function loadMessages() {
+        fetch('/chat/' + orderId + '/?format=json', {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            chatBox.innerHTML = '';
+            data.messages.forEach(msg => {
+                chatBox.innerHTML += `
+                    <p>
+                        <strong>${msg.sender}</strong>
+                        <small>${msg.time}</small><br>
+                        ${msg.text}
+                    </p>
+                    <hr>
+                `;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+
+    // Автообновление каждые 2 секунды
+    setInterval(loadMessages, 2000);
+</script>
+{% endblock %}

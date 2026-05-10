@@ -1,0 +1,73 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<h2>📖 Книга предложений</h2>
+<a href="{% url 'orders:create_suggestion' %}" class="btn btn-success">✏️ Написать предложение</a>
+
+<h3>Все предложения</h3>
+{% for s in suggestions %}
+    <div class="order {{ s.status }}">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <h4>{{ s.title }}</h4>
+            <span style="padding: 4px 10px; border-radius: 3px; font-size: 12px;
+                {% if s.status == 'new' %}background: #007bff; color: white;
+                {% elif s.status == 'reviewed' %}background: #ffc107; color: black;
+                {% elif s.status == 'done' %}background: #28a745; color: white;
+                {% elif s.status == 'rejected' %}background: #dc3545; color: white;
+                {% endif %}">
+                {{ s.get_status_display }}
+            </span>
+        </div>
+        <p>{{ s.text }}</p>
+        {% if s.admin_comment %}
+            <p style="background: #f0f0f0; padding: 8px; border-radius: 3px;">
+                💬 Ответ админа: {{ s.admin_comment }}
+            </p>
+        {% endif %}
+        <p>👤 {{ s.user.username }} | 🕐 {{ s.created_at|date:"d.m.Y H:i" }}</p>
+        <p>
+            <a href="{% url 'orders:like_suggestion' s.id %}" class="btn">
+                {% if user in s.likes.all %}❤️{% else %}🤍{% endif %} {{ s.total_likes }}
+            </a>
+        </p>
+
+        {% if user.is_superuser %}
+            <form method="post" action="{% url 'orders:update_suggestion_status' s.id %}" style="border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
+                {% csrf_token %}
+                <select name="status" style="width: auto; padding: 5px;">
+                    <option value="new" {% if s.status == 'new' %}selected{% endif %}>Новое</option>
+                    <option value="reviewed" {% if s.status == 'reviewed' %}selected{% endif %}>Рассмотрено</option>
+                    <option value="done" {% if s.status == 'done' %}selected{% endif %}>Выполнено</option>
+                    <option value="rejected" {% if s.status == 'rejected' %}selected{% endif %}>Отклонено</option>
+                </select>
+                <input type="text" name="admin_comment" placeholder="Комментарий..." value="{{ s.admin_comment|default:'' }}" style="width: 60%; padding: 5px; margin-left: 5px;">
+                <button type="submit" class="btn btn-success" style="padding: 5px 10px;">Сохранить</button>
+            </form>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Предложений пока нет.</p>
+{% endfor %}
+
+{% if user_suggestions %}
+<h3>Мои предложения</h3>
+{% for s in user_suggestions %}
+    <div class="order {{ s.status }}">
+        <h4>{{ s.title }} {% if not s.is_public %}(приватное){% endif %}</h4>
+        <p>{{ s.text }}</p>
+        <span style="padding: 4px 10px; border-radius: 3px; font-size: 12px;
+            {% if s.status == 'new' %}background: #007bff; color: white;
+            {% elif s.status == 'reviewed' %}background: #ffc107; color: black;
+            {% elif s.status == 'done' %}background: #28a745; color: white;
+            {% elif s.status == 'rejected' %}background: #dc3545; color: white;
+            {% endif %}">
+            {{ s.get_status_display }}
+        </span>
+        {% if s.admin_comment %}
+            <p style="background: #f0f0f0; padding: 8px; border-radius: 3px;">💬 {{ s.admin_comment }}</p>
+        {% endif %}
+        <p>👍 {{ s.total_likes }}</p>
+    </div>
+{% endfor %}
+{% endif %}
+{% endblock %}

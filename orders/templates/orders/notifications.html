@@ -1,0 +1,22 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<h2>🔔 Уведомления</h2>
+
+{% for n in notifications %}
+    <div class="order" style="{% if not n.is_read %}background: #e8f4fd; border-left: 5px solid #007bff;{% endif %}">
+        <p>{{ n.text }}</p>
+        <small>🕐 {{ n.created_at|date:"d.m.Y H:i" }}</small>
+        <div style="margin-top: 8px;">
+            {% if not n.is_read %}
+                <a href="{% url 'orders:mark_read' n.id %}" class="btn btn-success">✅ Прочитано</a>
+            {% endif %}
+            {% if n.link %}
+                <a href="{{ n.link }}" class="btn">🔗 Перейти</a>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p>Уведомлений пока нет.</p>
+{% endfor %}
+{% endblock %}

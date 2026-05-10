@@ -1,0 +1,31 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+<h2>Личный кабинет</h2>
+<div class="order">
+    <p><a href="{% url 'orders:edit_profile' %}" class="btn">✏️ Редактировать</a></p>
+    {% if profile.avatar %}<img src="{{ profile.avatar.url }}" style="max-width:100px; border-radius:50%;">{% endif %}
+    <h3>👤 {{ profile.user.username }}</h3>
+    <p>Роль: {{ profile.get_role_display }}</p>
+    <p>📞 {{ profile.phone|default:"—" }}</p>
+    <p>⭐ {{ profile.rating }}/5 (оценок: {{ profile.total_ratings }})</p>
+    <p>✅ Заказов: {{ profile.completed_orders }}</p>
+    <p>💰 Баллов: {{ profile.total_points }}</p>
+    {% if profile.skills %}<p>🛠 {{ profile.skills }}</p>{% endif %}
+    {% if profile.about %}<p>📝 {{ profile.about }}</p>{% endif %}
+</div>
+
+<h3>🕐 История баллов</h3>
+{% for h in points_history %}
+    <p>{{ h.created_at|date:"d.m.Y H:i" }} — {% if h.amount > 0 %}+{% endif %}{{ h.amount }} баллов — {{ h.description }}</p>
+{% empty %}<p>Нет операций.</p>{% endfor %}
+
+<h3>Мои заказы (клиент)</h3>
+{% for o in client_orders %}
+    <div class="order {{ o.status }}"><h4>{{ o.title }}</h4><p>Статус: {{ o.get_status_display }}</p></div>
+{% empty %}<p>Нет заказов.</p>{% endfor %}
+
+<h3>Взятые заказы (исполнитель)</h3>
+{% for o in executor_orders %}
+    <div class="order {{ o.status }}"><h4>{{ o.title }}</h4><p>Статус: {{ o.get_status_display }}</p></div>
+{% empty %}<p>Нет заказов.</p>{% endfor %}
+{% endblock %}

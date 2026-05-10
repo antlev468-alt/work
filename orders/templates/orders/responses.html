@@ -1,0 +1,14 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+<h2>Отклики на заказ: {{ order.title }}</h2>
+{% for r in responses %}
+    <div class="order">
+        <h4>{{ r.executor.username }}</h4>
+        <p>{{ r.text }}</p>
+        <p>🕐 {{ r.created_at|date:"d.m.Y H:i" }}</p>
+        <a href="{% url 'orders:accept_response' r.id %}" class="btn btn-success">Выбрать исполнителем</a>
+    </div>
+{% empty %}
+    <p>Откликов пока нет.</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<h2>Список заказов</h2>
+
+<!-- Фильтры -->
+<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: end;">
+        <div>
+            <label>🔍 Поиск</label><br>
+            <input type="text" name="search" value="{{ search }}" placeholder="Название заказа..." style="width: 180px;">
+        </div>
+        <div>
+            <label>📌 Статус</label><br>
+            <select name="status" style="width: 150px;">
+                <option value="">Все</option>
+                <option value="new" {% if status_filter == 'new' %}selected{% endif %}>Новые</option>
+                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>В работе</option>
+                <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Выполненные</option>
+                <option value="rated" {% if status_filter == 'rated' %}selected{% endif %}>Оценённые</option>
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Отменённые</option>
+            </select>
+        </div>
+        <div>
+            <label>💰 Баллы от</label><br>
+            <input type="number" name="points_from" value="{{ points_from }}" placeholder="0" style="width: 80px;">
+        </div>
+        <div>
+            <label>💰 до</label><br>
+            <input type="number" name="points_to" value="{{ points_to }}" placeholder="1000" style="width: 80px;">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-success">Применить</button>
+            <a href="{% url 'orders:order_list' %}" class="btn" style="background: #6c757d;">Сбросить</a>
+        </div>
+    </form>
+</div>
+
+<!-- Список заказов -->
+{% for order in orders %}
+    <div class="order {{ order.status }}">
+        <span style="font-size: 24px;">
+            {% if order.status == 'new' %}🆕
+            {% elif order.status == 'in_progress' %}🔄
+            {% elif order.status == 'done' %}✅
+            {% elif order.status == 'rated' %}⭐
+            {% elif order.status == 'cancelled' %}❌
+            {% endif %}
+        </span>
+        <h3 style="display: inline;">{{ order.title }}</h3>
+        <p>{{ order.description }}</p>
+        <p>💰 Баллы: <strong>{{ order.points }}</strong></p>
+        {% if order.deadline %}
+            <p>⏰ Срок: {{ order.deadline|date:"d.m.Y H:i" }}
+            {% if order.is_overdue %}<span style="color:red;">(просрочен!)</span>{% endif %}
+            </p>
+        {% endif %}
+        <p>📌 Статус: <strong>{{ order.get_status_display }}</strong></p>
+        <p>👤 Клиент: {{ order.client.username }}</p>
+        {% if order.executor %}
+            <p>🔧 Исполнитель: {{ order.executor.username }}</p>
+        {% endif %}
+        {% if order.client_rating %}
+            <p>⭐ Оценка: {{ order.client_rating }}/5</p>
+        {% endif %}
+        {% if order.client_review %}
+            <p>💬 Отзыв: {{ order.client_review }}</p>
+        {% endif %}
+        <p>🕐 Создан: {{ order.created_at|date:"d.m.Y H:i" }}</p>
+
+        {% if order.status == 'new' and user != order.client %}
+            <a href="{% url 'orders:respond_order' order.id %}" class="btn">📩 Откликнуться</a>
+            <a href="{% url 'orders:take_order' order.id %}" class="btn btn-success">✋ Взять в работу</a>
+        {% endif %}
+
+        {% if order.status == 'new' and user == order.client %}
+            <a href="{% url 'orders:order_responses' order.id %}" class="btn">📋 Отклики ({{ order.responses.count }})</a>
+        {% endif %}
+
+        {% if order.status == 'in_progress' and user == order.executor or is_admin %}
+            <a href="{% url 'orders:complete_order' order.id %}" class="btn btn-success">✅ Выполнено</a>
+        {% endif %}
+
+        {% if order.status == 'in_progress' and user == order.client or user == order.executor %}
+            <a href="{% url 'orders:chat' order.id %}" class="btn">💬 Чат</a>
+        {% endif %}
+
+        {% if order.status == 'done' and user == order.client %}
+            <a href="{% url 'orders:rate_order' order.id %}" class="btn btn-warning">⭐ Оценить</a>
+        {% endif %}
+
+        {% if user == order.client or is_admin %}
+            {% if order.status != 'cancelled' and order.status != 'done' and order.status != 'rated' %}
+                <a href="{% url 'orders:cancel_order' order.id %}" class="btn btn-warning">Отменить</a>
+            {% endif %}
+        {% endif %}
+
+        {% if is_admin %}
+            <a href="{% url 'orders:delete_order' order.id %}" class="btn btn-danger" onclick="return confirm('Удалить заказ?')">🗑 Удалить</a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Заказов не найдено.</p>
+{% endfor %}
+{% endblock %}
