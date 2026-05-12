@@ -11,6 +11,7 @@ from django.conf import settings
 from django.utils import translation
 from django.utils import translation
 from django.shortcuts import redirect
+from django.utils import translation
 
 
 def create_notification(user, text, link=None):
@@ -21,6 +22,8 @@ from django.utils import translation
 
 def set_language(request):
     lang = request.GET.get('lang', 'ru')
+    if lang not in ['ru', 'en', 'kk']:
+        lang = 'ru'
     response = redirect(request.META.get('HTTP_REFERER', '/'))
     response.set_cookie('django_language', lang, max_age=365*24*60*60)
     return response

@@ -1,6 +1,7 @@
 {% load translate %}
+{% with lang=request.COOKIES.django_language|default:'ru' %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,19 +49,19 @@
 <body>
     <nav>
         <div class="left">
-            <a href="{% url 'orders:order_list' %}">{{ '📋 Заказы'|translate:request.COOKIES.django_language|default:'ru' }}</a>
-            <a href="{% url 'orders:create_order' %}">{{ '➕ Создать'|translate:request.COOKIES.django_language|default:'ru' }}</a>
-            <a href="{% url 'orders:suggestion_list' %}">{{ '📖 Предложения'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+            <a href="{% url 'orders:order_list' %}">{{ '📋 Заказы'|translate:lang }}</a>
+            <a href="{% url 'orders:create_order' %}">{{ '➕ Создать'|translate:lang }}</a>
+            <a href="{% url 'orders:suggestion_list' %}">{{ '📖 Предложения'|translate:lang }}</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'orders:profile' %}">{{ '👤 Профиль'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'orders:profile' %}">{{ '👤 Профиль'|translate:lang }}</a>
             {% endif %}
             {% if user.is_superuser %}
-                <a href="{% url 'admin:index' %}">{{ '⚙️ Админка'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'admin:index' %}">{{ '⚙️ Админка'|translate:lang }}</a>
             {% endif %}
         </div>
         <div class="right">
             <a href="{% url 'orders:set_language' %}?lang=ru" class="lang-flag" style="color: var(--nav-text);">🇷🇺</a>
-            <a href="{% url 'orders:set_language' %}?lang=en" class="lang-flag" style="color: var(--nav-text);">🇬🇧</a>
+            <a href="{% url 'orders:set_language' %}?lang=en" class="lang-flag" style="color: var(--nav-text);">🇺🇸</a>
             <a href="{% url 'orders:set_language' %}?lang=kk" class="lang-flag" style="color: var(--nav-text);">🇰🇿</a>
 
             <button class="theme-toggle" onclick="toggleTheme()" title="Тёмная/Светлая тема">🌓</button>
@@ -71,11 +72,11 @@
                     <span id="notif-badge" style="position: absolute; top: -8px; right: -10px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; display: none;">0</span>
                 </a>
                 👤 {{ user.username }}
-                <a href="{% url 'logout' %}" class="btn-logout" style="background: #dc3545;">{{ '🚪 Выйти'|translate:request.COOKIES.django_language|default:'ru' }}</a>
-                <a href="{% url 'orders:delete_account' %}" class="btn-delete">{{ '🗑 Удалить'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'logout' %}" class="btn-logout" style="background: #dc3545;">{{ '🚪 Выйти'|translate:lang }}</a>
+                <a href="{% url 'orders:delete_account' %}" class="btn-delete">{{ '🗑 Удалить'|translate:lang }}</a>
             {% else %}
-                <a href="{% url 'login' %}" style="color: var(--nav-text);">{{ '🔑 Войти'|translate:request.COOKIES.django_language|default:'ru' }}</a>
-                <a href="{% url 'orders:register' %}" style="color: #90EE90;">{{ '📝 Регистрация'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'login' %}" style="color: var(--nav-text);">{{ '🔑 Войти'|translate:lang }}</a>
+                <a href="{% url 'orders:register' %}" style="color: #90EE90;">{{ '📝 Регистрация'|translate:lang }}</a>
             {% endif %}
         </div>
     </nav>
@@ -107,3 +108,4 @@
     </script>
 </body>
 </html>
+{% endwith %}
