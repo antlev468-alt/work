@@ -26,4 +26,5 @@ urlpatterns = [
     path('suggestions/create/', views.create_suggestion, name='create_suggestion'),
     path('suggestions/like/<int:suggestion_id>/', views.like_suggestion, name='like_suggestion'),
     path('suggestions/update/<int:suggestion_id>/', views.update_suggestion_status, name='update_suggestion_status'),
+    path('set-language/', views.set_language, name='set_language'),
 ]

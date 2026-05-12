@@ -6,11 +6,21 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import Profile, Order, Message, Suggestion, Notification, Response, PointsHistory
 from .forms import UserRegistrationForm, OrderForm, RatingForm, ResponseForm, ProfileEditForm, SuggestionForm
-
+from django.utils.translation import activate
+from django.conf import settings
+from django.utils import translation
 
 def create_notification(user, text, link=None):
     Notification.objects.create(user=user, text=text, link=link)
 
+
+def set_language(request):
+    lang = request.GET.get('lang', 'ru')
+    response = redirect(request.META.get('HTTP_REFERER', '/'))
+    if lang in ['ru', 'en']:
+        response.set_cookie('django_language', lang)
+        translation.activate(lang)
+    return response
 
 def add_points(user, amount, description):
     profile = Profile.objects.get_or_create(user=user)[0]

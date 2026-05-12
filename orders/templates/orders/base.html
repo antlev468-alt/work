@@ -87,6 +87,8 @@
         .btn-logout { color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 13px; }
         .btn-delete { background: #8B0000; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 13px; }
         .theme-toggle { cursor: pointer; background: none; border: 1px solid var(--nav-text); color: var(--nav-text); padding: 4px 8px; border-radius: 5px; font-size: 16px; }
+        .lang-flag { padding: 2px 6px; border-radius: 3px; text-decoration: none; font-size: 16px; }
+        .lang-flag.active { background: #28a745; }
         form p { margin: 10px 0; }
         input, textarea, select {
             width: 100%;
@@ -97,12 +99,6 @@
             border-radius: 4px;
             background: var(--input-bg);
             color: var(--input-text);
-        }
-        span.status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -120,7 +116,12 @@
             {% endif %}
         </div>
         <div class="right">
+            <!-- Переключатель языка -->
+            <a href="{% url 'orders:set_language' %}?lang=ru" class="lang-flag {% if request.LANGUAGE_CODE == 'ru' %}active{% endif %}" style="color: var(--nav-text);">🇷🇺</a>
+            <a href="{% url 'orders:set_language' %}?lang=en" class="lang-flag {% if request.LANGUAGE_CODE == 'en' %}active{% endif %}" style="color: var(--nav-text);">🇬🇧</a>
+
             <button class="theme-toggle" onclick="toggleTheme()" title="Тёмная/Светлая тема">🌓</button>
+
             {% if user.is_authenticated %}
                 <a href="{% url 'orders:notifications' %}" style="position: relative; color: var(--nav-text); text-decoration: none; font-size: 20px;">
                     🔔
@@ -152,7 +153,6 @@
             const isDark = document.body.classList.contains('dark-theme');
             localStorage.setItem('darkTheme', isDark);
         }
-        // Загружаем тему при открытии
         if (localStorage.getItem('darkTheme') === 'true') {
             document.body.classList.add('dark-theme');
         }
