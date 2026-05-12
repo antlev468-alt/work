@@ -65,6 +65,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 from django.utils.translation import gettext_lazy as _
 
+from django.utils.translation import gettext_lazy as _
+
 LANGUAGES = [
     ('ru', _('Русский')),
     ('en', _('English')),
@@ -73,6 +75,7 @@ LANGUAGES = [
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
+
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True

@@ -1,3 +1,4 @@
+{% load translate %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,80 +7,31 @@
     <title>Система заказов</title>
     <style>
         :root {
-            --bg: #fff;
-            --text: #333;
-            --card-bg: #fff;
-            --nav-bg: #333;
-            --nav-text: #fff;
-            --border: #ddd;
-            --filter-bg: #f5f5f5;
-            --input-bg: #fff;
-            --input-text: #333;
+            --bg: #fff; --text: #333; --card-bg: #fff; --nav-bg: #333;
+            --nav-text: #fff; --border: #ddd; --filter-bg: #f5f5f5;
+            --input-bg: #fff; --input-text: #333;
         }
         .dark-theme {
-            --bg: #1a1a2e;
-            --text: #eee;
-            --card-bg: #16213e;
-            --nav-bg: #0f3460;
-            --nav-text: #eee;
-            --border: #2a2a4a;
-            --filter-bg: #16213e;
-            --input-bg: #1a1a2e;
-            --input-text: #eee;
+            --bg: #1a1a2e; --text: #eee; --card-bg: #16213e; --nav-bg: #0f3460;
+            --nav-text: #eee; --border: #2a2a4a; --filter-bg: #16213e;
+            --input-bg: #1a1a2e; --input-text: #eee;
         }
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background: var(--bg);
-            color: var(--text);
-            transition: all 0.3s;
-        }
-        nav {
-            background: var(--nav-bg);
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: var(--bg); color: var(--text); transition: all 0.3s; }
+        nav { background: var(--nav-bg); padding: 10px 15px; margin-bottom: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         nav .left a { color: var(--nav-text); margin-right: 12px; text-decoration: none; font-size: 14px; }
         nav .right { color: var(--nav-text); display: flex; align-items: center; gap: 8px; font-size: 14px; }
         nav .right a { text-decoration: none; }
         .message { padding: 10px; margin: 10px 0; border-radius: 5px; }
         .success { background: #d4edda; color: #155724; }
         .error { background: #f8d7da; color: #721c24; }
-        .order {
-            border: 1px solid var(--border);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: var(--card-bg);
-            transition: all 0.2s;
-        }
+        .order { border: 1px solid var(--border); padding: 15px; margin: 10px 0; border-radius: 8px; background: var(--card-bg); transition: all 0.2s; }
         .order:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .new { border-left: 5px solid #007bff; }
         .in_progress { border-left: 5px solid #ffc107; }
         .done { border-left: 5px solid #28a745; }
         .rated { border-left: 5px solid #6f42c1; }
         .cancelled { border-left: 5px solid #dc3545; }
-        .btn {
-            padding: 8px 14px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 3px;
-            border-radius: 5px;
-            font-size: 13px;
-            background: #007bff;
-            transition: all 0.2s;
-        }
+        .btn { padding: 8px 14px; color: white; border: none; cursor: pointer; text-decoration: none; display: inline-block; margin: 3px; border-radius: 5px; font-size: 13px; background: #007bff; transition: all 0.2s; }
         .btn:hover { opacity: 0.85; }
         .btn-success { background: #28a745; }
         .btn-danger { background: #dc3545; }
@@ -90,35 +42,26 @@
         .lang-flag { padding: 2px 6px; border-radius: 3px; text-decoration: none; font-size: 16px; }
         .lang-flag.active { background: #28a745; }
         form p { margin: 10px 0; }
-        input, textarea, select {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            box-sizing: border-box;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--input-bg);
-            color: var(--input-text);
-        }
+        input, textarea, select { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; border: 1px solid var(--border); border-radius: 4px; background: var(--input-bg); color: var(--input-text); }
     </style>
 </head>
 <body>
     <nav>
         <div class="left">
-            <a href="{% url 'orders:order_list' %}">📋 Заказы</a>
-            <a href="{% url 'orders:create_order' %}">➕ Создать</a>
-            <a href="{% url 'orders:suggestion_list' %}">📖 Предложения</a>
+            <a href="{% url 'orders:order_list' %}">{{ '📋 Заказы'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+            <a href="{% url 'orders:create_order' %}">{{ '➕ Создать'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+            <a href="{% url 'orders:suggestion_list' %}">{{ '📖 Предложения'|translate:request.COOKIES.django_language|default:'ru' }}</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'orders:profile' %}">👤 Профиль</a>
+                <a href="{% url 'orders:profile' %}">{{ '👤 Профиль'|translate:request.COOKIES.django_language|default:'ru' }}</a>
             {% endif %}
             {% if user.is_superuser %}
-                <a href="{% url 'admin:index' %}">⚙️ Админка</a>
+                <a href="{% url 'admin:index' %}">{{ '⚙️ Админка'|translate:request.COOKIES.django_language|default:'ru' }}</a>
             {% endif %}
         </div>
         <div class="right">
-            <!-- Переключатель языка -->
-            <a href="{% url 'orders:set_language' %}?lang=ru" class="lang-flag {% if request.LANGUAGE_CODE == 'ru' %}active{% endif %}" style="color: var(--nav-text);">🇷🇺</a>
-            <a href="{% url 'orders:set_language' %}?lang=en" class="lang-flag {% if request.LANGUAGE_CODE == 'en' %}active{% endif %}" style="color: var(--nav-text);">🇬🇧</a>
+            <a href="{% url 'orders:set_language' %}?lang=ru" class="lang-flag" style="color: var(--nav-text);">🇷🇺</a>
+            <a href="{% url 'orders:set_language' %}?lang=en" class="lang-flag" style="color: var(--nav-text);">🇬🇧</a>
+            <a href="{% url 'orders:set_language' %}?lang=kk" class="lang-flag" style="color: var(--nav-text);">🇰🇿</a>
 
             <button class="theme-toggle" onclick="toggleTheme()" title="Тёмная/Светлая тема">🌓</button>
 
@@ -128,11 +71,11 @@
                     <span id="notif-badge" style="position: absolute; top: -8px; right: -10px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; display: none;">0</span>
                 </a>
                 👤 {{ user.username }}
-                <a href="{% url 'logout' %}" class="btn-logout" style="background: #dc3545;">🚪 Выйти</a>
-                <a href="{% url 'orders:delete_account' %}" class="btn-delete">🗑</a>
+                <a href="{% url 'logout' %}" class="btn-logout" style="background: #dc3545;">{{ '🚪 Выйти'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'orders:delete_account' %}" class="btn-delete">{{ '🗑 Удалить'|translate:request.COOKIES.django_language|default:'ru' }}</a>
             {% else %}
-                <a href="{% url 'login' %}" style="color: var(--nav-text);">🔑 Войти</a>
-                <a href="{% url 'orders:register' %}" style="color: #90EE90;">📝 Регистрация</a>
+                <a href="{% url 'login' %}" style="color: var(--nav-text);">{{ '🔑 Войти'|translate:request.COOKIES.django_language|default:'ru' }}</a>
+                <a href="{% url 'orders:register' %}" style="color: #90EE90;">{{ '📝 Регистрация'|translate:request.COOKIES.django_language|default:'ru' }}</a>
             {% endif %}
         </div>
     </nav>
@@ -147,32 +90,20 @@
     {% endblock %}
 
     <script>
-        // Тёмная тема
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
-            const isDark = document.body.classList.contains('dark-theme');
-            localStorage.setItem('darkTheme', isDark);
+            localStorage.setItem('darkTheme', document.body.classList.contains('dark-theme'));
         }
-        if (localStorage.getItem('darkTheme') === 'true') {
-            document.body.classList.add('dark-theme');
-        }
+        if (localStorage.getItem('darkTheme') === 'true') document.body.classList.add('dark-theme');
 
-        // Счётчик уведомлений
         function updateBadge() {
-            fetch('/notifications/count/')
-                .then(r => r.json())
-                .then(data => {
-                    const badge = document.getElementById('notif-badge');
-                    if (data.count > 0) {
-                        badge.textContent = data.count;
-                        badge.style.display = 'inline';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                });
+            fetch('/notifications/count/').then(r => r.json()).then(data => {
+                const badge = document.getElementById('notif-badge');
+                if (data.count > 0) { badge.textContent = data.count; badge.style.display = 'inline'; }
+                else { badge.style.display = 'none'; }
+            });
         }
-        updateBadge();
-        setInterval(updateBadge, 10000);
+        updateBadge(); setInterval(updateBadge, 10000);
     </script>
 </body>
 </html>

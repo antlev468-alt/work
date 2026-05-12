@@ -9,17 +9,20 @@ from .forms import UserRegistrationForm, OrderForm, RatingForm, ResponseForm, Pr
 from django.utils.translation import activate
 from django.conf import settings
 from django.utils import translation
+from django.utils import translation
+from django.shortcuts import redirect
+
 
 def create_notification(user, text, link=None):
     Notification.objects.create(user=user, text=text, link=link)
 
 
+from django.utils import translation
+
 def set_language(request):
     lang = request.GET.get('lang', 'ru')
     response = redirect(request.META.get('HTTP_REFERER', '/'))
-    if lang in ['ru', 'en']:
-        response.set_cookie('django_language', lang)
-        translation.activate(lang)
+    response.set_cookie('django_language', lang, max_age=365*24*60*60)
     return response
 
 def add_points(user, amount, description):
